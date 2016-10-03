@@ -27,7 +27,17 @@ old_ptb_path = which('PsychtoolboxVersion.m');
 old_ptb_path = old_ptb_path(1:end-33); % to PTB folder
 
 
-if numel(old_ptb_path) == 0
+
+
+if strcmpi(old_ptb_path,desired_ptb_path)
+    % if the old path matches the desired path
+    disp('Desired PTB version currently in path')
+    current_ptb = PsychtoolboxVersion
+    
+    
+    
+    
+elseif  numel(old_ptb_path) == 0
     % if old path is empty, then just add the new desired path
     
     disp('PTB not found in path. Adding desired path.')
@@ -42,15 +52,16 @@ if numel(old_ptb_path) == 0
         disp('Desired PTB added to path')
         current_ptb = PsychtoolboxVersion
     end
-        
     
+    % save current path, run PTB setup to organise path
+    old_wd = pwd;
+    cd(desired_ptb_path)
+    SetupPsychtoolbox
+    cd(old_wd)
     
-    
-elseif old_ptb_path == desired_ptb_path
-    disp('Desired PTB version currently in path')
-    current_ptb = PsychtoolboxVersion
     
 else
+    % if path doesn't match, and new path not empty
     
     disp('Removing old PTB from path')
     oldpath = path;
@@ -63,5 +74,28 @@ else
     addpath(genpath(desired_ptb_path))
     current_ptb = PsychtoolboxVersion
     
+    % save current path, run PTB setup to organise path
+    old_wd = pwd;
+    cd(desired_ptb_path)
+    SetupPsychtoolbox
+    cd(old_wd)
+    
 end
 
+
+
+% also check that PsychJava is in the Java class path
+found_pjava = 0;
+jpath = javaclasspath('-all');
+for i=1:numel(jpath)
+    [j1 java_entries{i}] = fileparts(jpath{i});
+    if strcmpi(java_entries{i}, 'PsychJava')
+        found_pjava = 1;
+    end
+end
+
+try assert(found_pjava == 1)
+    
+catch
+    display('WARNING - PsychJava not in classpath. Ensure Psychtoolbox is correctly installed, and your have write access to Matlab java classpath (MATLAB/R2014a/toolbox/local/classpath.txt) on installing PTB.');
+end
