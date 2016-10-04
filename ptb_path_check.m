@@ -26,6 +26,20 @@ end
 old_ptb_path = which('PsychtoolboxVersion.m');
 old_ptb_path = old_ptb_path(1:end-33); % to PTB folder
 
+try
+    % test to see if PTB is actually in the desired path
+    assert(exist(desired_ptb_path,'dir') == 7)
+    assert(exist([desired_ptb_path '/SetupPsychtoolbox.m'],'file') == 2)
+    
+catch ME
+    text = ['WARNING - Psychtoolbox was not found in the requested folder of ' desired_ptb_path];
+    disp(text)
+    text = 'Please check the path and the contents of that folder and try again. Specify path including the Psychtoolbox.';
+    disp(text)
+    text = 'Please press enter to continue';
+    usr_press = input(text,'s');
+    return
+end
 
 
 
@@ -37,42 +51,24 @@ if strcmpi(old_ptb_path,desired_ptb_path)
     
     
     
-elseif  numel(old_ptb_path) == 0
-    % if old path is empty, then just add the new desired path
-    
-    disp('PTB not found in path. Adding desired path.')
-    addpath(genpath(desired_ptb_path))  % genpath adds subfolders too
-    
-    % Check PTB again, to check that is is now in path
-    check_ptb_path = which('PsychtoolboxVersion.m');
-    if numel(check_ptb_path) == 0  % path still empty, even after adding desired path
-        disp('PTB does not seem to be in old path or in the desired path.')
-        disp('Ensure PTB is installed in the desired shared location and try again')
-    else
-        disp('Desired PTB added to path')
-        current_ptb = PsychtoolboxVersion
-    end
-    
-    % save current path, run PTB setup to organise path
-    old_wd = pwd;
-    cd(desired_ptb_path)
-    SetupPsychtoolbox
-    cd(old_wd)
     
     
 else
-    % if path doesn't match, and new path not empty
-    
-    disp('Removing old PTB from path')
-    oldpath = path;
-    
-    %do some stuff to clear trace of old PTB path
-    rmpath(genpath(old_ptb_path));
+    % if paths don't match
     
     
-    disp('Adding desired PTB path')
-    addpath(genpath(desired_ptb_path))
-    current_ptb = PsychtoolboxVersion
+    
+    text = [' Psychtoolbox is currently set to ' old_ptb_path];
+    disp(text)
+    text = ['rather than the requested path of ' desired_ptb_path];
+    disp(text)
+    text = 'At the following prompts, please enter ''yes'' twice, hit enter, and wait for the PTB path change to complete';
+    disp(text)
+    text = 'This is only needed once for each PTB path change.';
+    disp(text)
+    text = 'Please press enter to continue';
+    usr_press = input(text,'s');
+    
     
     % save current path, run PTB setup to organise path
     old_wd = pwd;
