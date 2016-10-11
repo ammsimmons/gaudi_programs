@@ -75,6 +75,8 @@ else
     cd(desired_ptb_path)
     SetupPsychtoolbox
     cd(old_wd)
+
+    current_ptb = PsychtoolboxVersion
     
 end
 
